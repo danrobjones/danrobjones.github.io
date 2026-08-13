@@ -1,0 +1,397 @@
+/* ---------- Fonts ---------- */
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://api.fontshare.com/v2/css?f[]=switzer@400,500&display=swap");
+
+/* ---------- Tokens ---------- */
+:root {
+  --paper: #EFE8D9;
+  --ink:   #1B1815;
+  --muted: #6B6157;
+  --accent:#8E2C24;
+  --flash: #C46A3F;
+  --rule:  #CFC4AE;
+  --tint:  #DED5C2;
+
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-body:    "Switzer", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --page-max: 1080px;
+  --page-pad: 40px;
+
+  --measure: 60ch;
+
+  /* Portrait tile: 250px wide, arch-shaped. */
+  --portrait-w: 250px;
+  --portrait-ratio: 300 / 408;
+
+  /* One period of the wiggle, in px. Animating by exactly this tiles seamlessly. */
+  --wiggle-period: 16px;
+
+  /* Time to travel one period. Perceived speed is period ÷ duration, so any
+     element with a different period must scale this to match — otherwise a
+     shorter wave crawls. 16px / 620ms ≈ 25.8px per second. */
+  --wiggle-duration: 620ms;
+}
+
+:root[data-theme="dark"] {
+  --paper: #17140F;
+  --ink:   #EAE3D4;
+  --muted: #9C9184;
+  --accent:#D9756A;
+  --flash: #E5A26B;
+  --rule:  #33291E;
+  --tint:  #211C15;
+}
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+p { margin: 0 0 26px; max-width: var(--measure); }
+p + p { margin-top: 0; }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 30px;
+}
+
+h1 { font-size: clamp(30px, 3.6vw, 38px); }
+h2 { font-size: 23px; letter-spacing: 0; font-family: var(--font-body); font-weight: 500; }
+h3 { font-size: 20px; letter-spacing: 0; font-family: var(--font-body); font-weight: 500; margin-bottom: 18px; }
+
+.meta {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- Links: The Outline-style travelling wiggle ----------
+   The squiggle is a mask over currentColor rather than a background image,
+   so it inherits the link's colour and needs no per-theme variant. Hover
+   scrolls the mask by exactly one period, which loops seamlessly. */
+a {
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+}
+
+a:not(.wordmark)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.32em;
+  height: 6px;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 6'><path d='M0 3 Q 4 0.5 8 3 T 16 3' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 6'><path d='M0 3 Q 4 0.5 8 3 T 16 3' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round'/></svg>");
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-size: var(--wiggle-period) 6px;
+  mask-size: var(--wiggle-period) 6px;
+  -webkit-mask-position: 0 50%;
+  mask-position: 0 50%;
+  opacity: 0;
+  transition: opacity 130ms ease;
+  pointer-events: none;
+}
+
+a:not(.wordmark):hover::after,
+a:not(.wordmark):focus-visible::after {
+  opacity: 1;
+  animation: wiggle-run var(--wiggle-duration) linear infinite;
+}
+
+a:not(.wordmark):hover,
+a:not(.wordmark):focus-visible { color: var(--accent); }
+
+@keyframes wiggle-run {
+  from { -webkit-mask-position: 0 50%;                  mask-position: 0 50%; }
+  to   { -webkit-mask-position: var(--wiggle-period) 50%; mask-position: var(--wiggle-period) 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a:not(.wordmark):hover::after,
+  a:not(.wordmark):focus-visible::after,
+  .wordmark:hover::after,
+  .wordmark:focus-visible::after { animation: none; }
+}
+
+/* ---------- Layout ---------- */
+.page {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--page-pad);
+}
+
+/* ---------- Masthead ----------
+   Wordmark sits left; the toggle and nav stack right-aligned beside it. */
+.masthead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 44px;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4.2vw, 50px);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+  display: inline-block;
+  padding-bottom: 14px;
+  flex: none;
+
+  /* The wordmark's squiggle tiles at 13px rather than the default 16px, so
+     scope the period here — the shared keyframes read it per-element and
+     will travel exactly one tile, keeping the loop seamless. The duration is
+     scaled by the same 13/16 ratio (620ms × 0.8125) so the wave travels at
+     the same px-per-second as the links rather than looking sluggish. */
+  --wiggle-period: 13px;
+  --wiggle-duration: 504ms;
+}
+
+/* Permanent wavy rule under the wordmark, in --flash. It sits at rest and
+   starts travelling on hover. */
+.wordmark::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 7px;
+  background-color: var(--flash);
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 6'><path d='M0 3 Q 4 0.5 8 3 T 16 3' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 6'><path d='M0 3 Q 4 0.5 8 3 T 16 3' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/></svg>");
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-size: var(--wiggle-period) 7px;
+  mask-size: var(--wiggle-period) 7px;
+  -webkit-mask-position: 0 50%;
+  mask-position: 0 50%;
+}
+
+.wordmark:hover::after,
+.wordmark:focus-visible::after {
+  animation: wiggle-run var(--wiggle-duration) linear infinite;
+}
+
+.masthead-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 22px;
+  padding-top: 4px;
+}
+
+.nav {
+  display: flex;
+  gap: 26px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.nav a {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.nav a[aria-current="page"] { color: var(--accent); }
+
+/* ---------- Theme toggle (pill switch) ---------- */
+.theme-toggle {
+  width: 34px;
+  height: 18px;
+  flex: none;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--tint);
+  cursor: pointer;
+  position: relative;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.theme-toggle:hover { border-color: var(--accent); }
+
+.theme-toggle__knob {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--muted);
+  transform: translate(0, -50%);
+  transition: transform 180ms ease, background-color 180ms ease;
+}
+:root[data-theme="dark"] .theme-toggle__knob {
+  transform: translate(16px, -50%);
+  background: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle__knob { transition: none; }
+}
+
+/* ---------- Homepage ---------- */
+.home-grid {
+  display: grid;
+  grid-template-columns: var(--portrait-w) 58ch;
+  gap: 56px;
+  align-items: start;
+}
+
+.home-grid .text { padding-left: 28px; }
+
+.home-grid h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4.5vw, 3.1rem);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-bottom: 30px;
+}
+
+.home-grid p {
+  font-size: 17.5px;
+  line-height: 1.65;
+  margin-bottom: 26px;
+}
+.home-grid p:nth-of-type(2) { margin-bottom: 18px; }
+
+/* Arch: elliptical dome on top, near-square base. */
+.portrait {
+  width: 100%;
+  aspect-ratio: var(--portrait-ratio);
+  object-fit: cover;
+  background: var(--tint);
+  border-radius: 50% 50% 6px 6px / 30% 30% 6px 6px;
+}
+
+/* ---------- Wavy rule ---------- */
+hr.wavy {
+  border: 0;
+  width: 120px;
+  height: 10px;
+  margin: 3rem 0;
+  background-color: var(--muted);
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'><path d='M0 5 Q 15 0 30 5 T 60 5 T 90 5 T 120 5' fill='none' stroke='black' stroke-width='1.25'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'><path d='M0 5 Q 15 0 30 5 T 60 5 T 90 5 T 120 5' fill='none' stroke='black' stroke-width='1.25'/></svg>");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* ---------- Reading list ---------- */
+.reading-list { list-style: none; padding: 0; margin: 0; }
+
+.reading-entry { margin-bottom: 42px; }
+.reading-entry:last-child { margin-bottom: 0; }
+
+.reading-entry .title {
+  font-family: var(--font-display);
+  font-size: 27px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 6px;
+}
+
+.reading-entry .byline {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.reading-entry .note {
+  font-size: 14.5px;
+  line-height: 1.6;
+  max-width: var(--measure);
+  margin: 0;
+}
+
+/* ---------- Resources ---------- */
+.resource-group { margin-bottom: 56px; }
+.resource-group:last-child { margin-bottom: 0; }
+
+.resource-group h2 {
+  font-family: var(--font-body);
+  font-size: 23px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.resource-list { list-style: none; padding: 0; margin: 0; }
+.resource-list li { margin-bottom: 14px; font-size: 14.5px; line-height: 1.6; }
+
+/* ---------- Secondary body ---------- */
+.small { font-size: 14.5px; line-height: 1.6; color: var(--muted); }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  margin-top: 64px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.colophon { margin: 0; max-width: none; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 800px) {
+  .page { padding: 28px 22px; }
+
+  .masthead {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  /* Dissolve the controls wrapper so the toggle and nav become direct flex
+     items of the masthead: wordmark + toggle share the top row, and the nav
+     drops to its own full-width row instead of being crushed into the
+     leftover space and wrapping onto five lines. */
+  .masthead-controls { display: contents; }
+  .theme-toggle { order: 2; margin-left: auto; }
+  .nav {
+    order: 3;
+    flex: 0 0 100%;
+    justify-content: flex-start;
+    gap: 18px;
+  }
+
+  .home-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .home-grid .text { padding-left: 0; }
+  .portrait { max-width: var(--portrait-w); }
+}

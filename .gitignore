@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# iCloud Drive placeholders
+*.icloud
+
+# Editor / tooling
+.claude/
+.vscode/
+.idea/
