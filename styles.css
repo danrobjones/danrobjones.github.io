@@ -157,7 +157,15 @@ a:not(.wordmark):focus-visible { color: var(--accent); }
 
 .wordmark {
   font-family: var(--font-display);
-  font-size: clamp(34px, 4.2vw, 50px);
+
+  /* Sized so the wordmark measures the same width as the portrait below it,
+     giving both a flush right edge. "Dan Rob Jones" in Instrument Serif at
+     -0.02em renders ~4.588px wide per 1px of font-size, so the divisor is
+     specific to this name and this typeface — re-measure if either changes.
+     Fixed rather than fluid because the rest of the desktop layout is fixed:
+     a vw-based size drifts out of alignment as the window narrows. */
+  font-size: calc(var(--portrait-w) / 4.588);
+
   letter-spacing: -0.02em;
   line-height: 1;
   color: var(--ink);
@@ -367,6 +375,10 @@ hr.wavy {
 /* ---------- Responsive ---------- */
 @media (max-width: 800px) {
   .page { padding: 28px 22px; }
+
+  /* Stacked layout — the nav sits between the wordmark and the portrait, so
+     the edge relationship is much weaker. Keep the smaller spec size. */
+  .wordmark { font-size: 34px; }
 
   .masthead {
     flex-wrap: wrap;
