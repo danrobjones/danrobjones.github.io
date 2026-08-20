@@ -126,6 +126,16 @@ a:not(.wordmark):focus-visible::after {
 a:not(.wordmark):hover,
 a:not(.wordmark):focus-visible { color: var(--accent); }
 
+/* Links in prose keep a faint resting squiggle, so they can be spotted
+   without hovering. The nav is deliberately exempt: it already reads as
+   navigation, and six permanent squiggles there would just be noise.
+   The mask paints currentColor, so this follows the text colour in both
+   themes and deepens to --accent on hover. */
+main a:not(.wordmark)::after { opacity: 0.4; }
+
+main a:not(.wordmark):hover::after,
+main a:not(.wordmark):focus-visible::after { opacity: 1; }
+
 @keyframes wiggle-run {
   from { -webkit-mask-position: 0 50%;                  mask-position: 0 50%; }
   to   { -webkit-mask-position: var(--wiggle-period) 50%; mask-position: var(--wiggle-period) 50%; }
