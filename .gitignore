@@ -11,3 +11,6 @@
 .claude/
 .vscode/
 .idea/
+
+# Original photos — kept locally, never published
+_source/
