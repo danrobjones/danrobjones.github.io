@@ -72,7 +72,27 @@
     }
   }
 
+  /* ---------- External links open in a new tab ----------
+     Done at runtime rather than by hand-writing target= on every anchor, so
+     any link added later gets the behaviour for free. Only http(s) links
+     pointing at another host qualify — mailto:, tel:, in-page anchors and
+     anything on this site are left alone. rel=noopener stops the opened page
+     reaching back through window.opener; noreferrer is deliberately omitted
+     so sites like Substack still see the traffic as coming from here. */
+  function externalLinksInNewTab() {
+    const here = location.hostname;
+    for (const a of document.querySelectorAll("a[href]")) {
+      if (a.protocol !== "http:" && a.protocol !== "https:") continue;
+      if (!a.hostname || a.hostname === here) continue;
+      a.target = "_blank";
+      const rel = new Set((a.rel || "").split(/\s+/).filter(Boolean));
+      rel.add("noopener");
+      a.rel = [...rel].join(" ");
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
+    externalLinksInNewTab();
     toggle = document.querySelector(".theme-toggle");
     if (toggle) {
       syncToggle();
