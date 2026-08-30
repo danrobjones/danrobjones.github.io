@@ -130,12 +130,21 @@ a:not(.wordmark)::after {
   opacity: 0;
   transition: opacity 130ms ease;
   pointer-events: none;
+
+  /* Declared here and merely paused, rather than added on :hover. Adding it
+     on hover means removing it on unhover, which snaps mask-position back to
+     0 mid-fade — a visible jerk whenever the pointer leaves partway through a
+     cycle. Pausing holds the wave where it stopped. A paused animation costs
+     nothing, and since the tile repeats seamlessly, any resting phase looks
+     identical. */
+  animation: wiggle-run var(--wiggle-duration) linear infinite;
+  animation-play-state: paused;
 }
 
 a:not(.wordmark):hover::after,
 a:not(.wordmark):focus-visible::after {
   opacity: 1;
-  animation: wiggle-run var(--wiggle-duration) linear infinite;
+  animation-play-state: running;
 }
 
 a:not(.wordmark):hover,
@@ -152,10 +161,8 @@ main a:not(.wordmark) { color: var(--accent); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  a:not(.wordmark):hover::after,
-  a:not(.wordmark):focus-visible::after,
-  .wordmark:hover::after,
-  .wordmark:focus-visible::after { animation: none; }
+  a:not(.wordmark)::after,
+  .wordmark::after { animation: none; }
 }
 
 /* ---------- Layout ---------- */
@@ -220,11 +227,17 @@ main a:not(.wordmark) { color: var(--accent); }
   mask-size: var(--wiggle-period) 7px;
   -webkit-mask-position: 0 50%;
   mask-position: 0 50%;
+
+  /* Paused at rest for the same reason as the links above: this squiggle is
+     permanently visible, so a snap back to phase 0 on unhover would be even
+     more obvious than it is on a fading one. */
+  animation: wiggle-run var(--wiggle-duration) linear infinite;
+  animation-play-state: paused;
 }
 
 .wordmark:hover::after,
 .wordmark:focus-visible::after {
-  animation: wiggle-run var(--wiggle-duration) linear infinite;
+  animation-play-state: running;
 }
 
 .masthead-controls {
