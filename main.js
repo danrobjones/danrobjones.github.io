@@ -88,6 +88,17 @@
       const rel = new Set((a.rel || "").split(/\s+/).filter(Boolean));
       rel.add("noopener");
       a.rel = [...rel].join(" ");
+
+      /* Appended rather than set as an aria-label: a label would replace the
+         link's accessible name, letting the spoken and visible text drift
+         apart. This adds to it, so it stays in step with whatever the link
+         says. Guarded so re-running never doubles it up. */
+      if (!a.querySelector(".visually-hidden")) {
+        const note = document.createElement("span");
+        note.className = "visually-hidden";
+        note.textContent = " (opens in a new tab)";
+        a.appendChild(note);
+      }
     }
   }
 
